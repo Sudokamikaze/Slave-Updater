@@ -65,5 +65,11 @@ class MAINC:
             print('There is something went wrong')
             os.sys.exit(1)
         
-        client.containers.run(image='Slave', detach=True, name='Jenkins_slave', network_mode='bridge', volumes={'slave_data': {'volume':'/home/jenkins', 'mode', 'rw'}})
+        client.containers.run(image='Slave', detach=True, name='Jenkins_slave', network_mode='bridge', 
+        volumes={
+        'slave_data': {'volume':'/home/jenkins', 'mode', 'rw'}
+        })
+        
         print('Finished updaing Docker container! Git HEAD was {}'.format(git.Repo(self.__repo_dir).repo.head.commit))
+
+classcall = MAINC()
