@@ -30,11 +30,17 @@ class MAINC:
 
     def check_for_updates(self):
         if os.path.isdir(self.__repo_dir) == False:
+            print('Clonning repo')
             git.Repo.clone_from("https://github.com/Sudokamikaze/Slave.git", self.__repo_dir)
+            print('Starting container update procedure')
+            self.calling_docker()
+
         else:
             if self.puller() == "Nothing to do":
+                print('There is nothing to do, exiting...')
                 os.sys.exit(0)
             else:
+                print('Starting container update procedure')
                 self.calling_docker()
 
     def puller(self):
