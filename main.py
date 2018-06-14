@@ -2,7 +2,7 @@
 
 import docker
 import subprocess
-from git 
+import git 
 import os
 import configparser
 
