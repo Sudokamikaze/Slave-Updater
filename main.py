@@ -6,7 +6,7 @@ import git
 import os
 import configparser
 
-client = docker.from_env()
+client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
 class MAINC:
     __parser = configparser.ConfigParser()
@@ -52,11 +52,12 @@ class MAINC:
         return valuetoreturn
          
     def calling_docker(self):
-        client.containers.stop('Jenkins_slave')
-        client.containers.remove('Jenkins_slave')
-        client.images.remove('Slave')
+        container = client.containers.get('Jenkins_slave')
+        container.stop()
+        container.remove()
+        client.images.remove('slave')
         try:
-            client.build(path='/tmp/Slave', nocache=True, tag='Slave:latest',
+            client.images.build(path='/tmp/Slave', nocache=True, tag='slave:latest',
             buildargs={
             'Jenkins_Secret': self.__parser['DEFAULT']['Jenkins_Secret'],
             'Jenkins_Node_Name': self.__parser['DEFAULT']['Jenkins_Node_Name'],
@@ -68,7 +69,7 @@ class MAINC:
             print('There is something went wrong')
             os.sys.exit(1)
         
-        client.containers.run(image='Slave', detach=True, name='Jenkins_slave', network_mode='bridge', 
+        client.containers.run(image='slave', detach=True, name='Jenkins_slave', network_mode='bridge', 
         volumes={
         'slave_data': {'volume':'/home/jenkins', 'mode': 'rw'}
         })
