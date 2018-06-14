@@ -71,7 +71,10 @@ class MAINC:
         
         client.containers.run(image='slave', detach=True, name='Jenkins_slave', network_mode='bridge', 
         volumes={
-        'slave_data': {'volume':'/home/jenkins', 'mode': 'rw'}
+        '/home/jenkins': {
+            'bind': 'slave_data', 
+            'mode': 'rw'
+            }
         })
         
         print('Finished updaing Docker container! Git HEAD was {}'.format(git.Repo(self.__repo_dir).repo.head.commit))
