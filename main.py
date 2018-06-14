@@ -6,10 +6,10 @@ import git
 import os
 import configparser
 
-client = docker.from.env()
-parser = configparser.ConfigParser()
+client = docker.from_env()
 
 class MAINC:
+    __parser = configparser.ConfigParser()
     __repo_url = "https://github.com/Sudokamikaze/Slave.git"
     __repo_dir = "/tmp/Slave"
     __config_file = "env.config"
@@ -25,10 +25,7 @@ class MAINC:
             print('No connection to Docker Engine, exiting...')
             os.sys.exit(1)
 
-        self.__Jsecret = parser['SD']['Jenkins_Secret']
-        self.__Jn_Name = parser['SD']['Jenkins_Node_Name']
-        self.__Jm_IP   = parser['SD']['Jenkins_Master_IP']
-        self.__Jm_Port = parser['SD']['Jenkins_Master_Port']
+        self.__parser.read(self.__config_file)
         self.check_for_updates()
 
     def check_for_updates(self):
@@ -55,10 +52,10 @@ class MAINC:
         try:
             client.build(path='/tmp/Slave', nocache=True, tag='Slave:latest',
             buildargs={
-            'Jenkins_Secret': self.__Jsecret,
-            'Jenkins_Node_Name': self.__Jn_Name,
-            'Jenkins_Master_IP': self.__Jm_IP,
-            'Jenkins_Master_Port': self.__Jm_Port
+            'Jenkins_Secret': self.__parser['DEFAULT']['Jenkins_Secret'],
+            'Jenkins_Node_Name': self.__parser['DEFAULT']['Jenkins_Node_Name'],
+            'Jenkins_Master_IP': self.__parser['DEFAULT']['Jenkins_Master_IP'],
+            'Jenkins_Master_Port': self.__parser['DEFAULT']['Jenkins_Master_Port']
                       }
             ) 
         except docker.errors.BuildError:
@@ -67,7 +64,7 @@ class MAINC:
         
         client.containers.run(image='Slave', detach=True, name='Jenkins_slave', network_mode='bridge', 
         volumes={
-        'slave_data': {'volume':'/home/jenkins', 'mode', 'rw'}
+        'slave_data': {'volume':'/home/jenkins', 'mode': 'rw'}
         })
         
         print('Finished updaing Docker container! Git HEAD was {}'.format(git.Repo(self.__repo_dir).repo.head.commit))
