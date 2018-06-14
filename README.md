@@ -17,6 +17,7 @@ Table of contents
 
 ```
    docker run -d \
+   -v /var/run/docker.sock:/var/run/docker.sock \
    --name=Slave-Updater \
    --restart=always \
    slave-updater:latest
